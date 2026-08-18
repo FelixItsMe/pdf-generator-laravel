@@ -69,7 +69,11 @@ class PdfGenerationController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $jobs = PdfJob::where('user_id', $request->user()?->id)
+        if (! $request->user()) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $jobs = PdfJob::where('user_id', $request->user()->id)
             ->latest()
             ->paginate(15);
 

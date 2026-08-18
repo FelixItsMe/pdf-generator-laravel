@@ -45,8 +45,8 @@ class ImageUploadController extends Controller
      */
     public function destroy(Request $request, UploadedImage $image): JsonResponse
     {
-        // Only the owner (or admin) may delete
-        if ($request->user() && $request->user()->id !== $image->user_id) {
+        // Only the owner may delete; deny unauthenticated requests too
+        if (! $request->user() || $request->user()->id !== $image->user_id) {
             return response()->json(['message' => 'Forbidden.'], 403);
         }
 

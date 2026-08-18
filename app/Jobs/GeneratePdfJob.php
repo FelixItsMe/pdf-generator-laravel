@@ -54,12 +54,12 @@ class GeneratePdfJob implements ShouldQueue
             $url     = $storageService->publicUrl($disk, $path);
 
             $this->pdfJob->update([
-                'status'       => 'completed',
-                'disk'         => $disk,
-                'pdf_path'     => $path,
-                'pdf_url'      => $url,
-                'pdf_size'     => strlen($pdfContent),
-                'completed_at' => now(),
+                'status'        => 'completed',
+                'disk'          => $disk,
+                'pdf_path'      => $path,
+                'pdf_url'       => $url,
+                'pdf_size'      => strlen($pdfContent),
+                'completed_at'  => now(),
                 'error_message' => null,
             ]);
 
@@ -71,12 +71,9 @@ class GeneratePdfJob implements ShouldQueue
                 'error'      => $e->getMessage(),
             ]);
 
-            $this->pdfJob->update([
-                'status'        => 'failed',
-                'error_message' => $e->getMessage(),
-            ]);
-
-            throw $e; // Re-throw so the queue driver can handle retry logic
+            // Only log here; let the queue driver handle retries.
+            // Status is set to 'failed' only in failed() after all retries are exhausted.
+            throw $e;
         }
     }
 
